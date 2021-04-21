@@ -1,26 +1,41 @@
 %!TEX encoding = UTF-8 Unicode
 % ================================================================================
 \documentclass[
-    fontsize=12pt,
-    headings=small,
+    fontsize=10pt,
+    headings=medium,
     parskip=half,           % Ersetzt manuelles Setzen von parskip/parindent.
     bibliography=totoc,
     numbers=noenddot,       % Entfernt den letzten Punkt der Kapitelnummern.
     open=any,               % Kapitel kann auf jeder Seite beginnen.
+    a4paper,
 %   final                   % Entfernt alle todonotes und den Entwurfstempel.
     ]{scrreprt}
+    
+\usepackage[cm]{fullpage}
+\usepackage[compact]{titlesec}
+
+\titlespacing*{\section} {}{1.5ex plus 1ex minus .2ex}{1.3ex plus .2ex}
+\titlespacing*{\subsection} {}{0.5ex plus 0.5ex minus .2ex}{0.2ex plus .2ex}
+
+\titleformat{\section}
+       {\normalfont\fontsize{12}{17}\bfseries}{\thesection}{1em}{}
+
+\titleformat{\subsection}
+       {\normalfont\fontsize{10}{17}\bfseries}{\thesubsection}{1em}{}
+
 % ===================================Praeambel==================================
 \include{stylesvs}
 % ===================================Dokument===================================
 
 \title{Labreport 1}
-\author{Enric Carstens, Matz Radloff}
+\author{Enric Carstens 6801947, Matz Radloff 6946325}
 % \date{01.01.2015} % Falls ein bestimmtes Datum eingesetzt werden soll, einfach
                     %  diese Zeile aktivieren.
 
 \begin{document}
 
 \begin{titlepage}
+
 \begin{center}\Large
     % Universität Hamburg \par
     % Fachbereich Informatik
@@ -39,6 +54,7 @@
     \vfill
     \vfill
 \end{center}
+
 \end{titlepage}
 
 \chapter{Arbeiten mit der Linux-Kommandozeile (bash)}
@@ -60,7 +76,7 @@ Mit dem Befehl \emph{script} wird ein typescript bestehend aus allen bisherigen 
 Die folgenden Befehle sind mit \emph{sudo} auszuführen, da der normale User keinen Zugriff auf diese hat.
 
 \subsection*{1.}
-Einen neuen User mit dem Namen "labmate" kann man mit dem Befehl \emph{useradd -m labmate} erstellen. Das Passwort kann man dann mit Hilfe von \emph{passwd laborratte} setzen.
+Einen neuen User mit dem Namen "labmate" kann man mit dem Befehl \emph{useradd -m labmate} erstellen. Das Passwort kann man dann mit Hilfe von \emph{passwd labmate} und der doppelten Eingabe von \emph{laborratte} setzen.
 
 \subsection*{2.}
 Die Gruppen eines Users kann man sich mit \emph{groups 'user'} anzeigen lassen.
@@ -74,12 +90,12 @@ Den User kann man mit dem Befehl \emph{usermod -a -G labortests labmate} zu eine
 \subsection*{5.}
 Die sudo-Berechtigung kann man einem User mit dem Befehl \emph{usermod -a -G sudo 'user'} zuweisen. Damit wird der User zu der sudo Gruppe hinzugefügt.
 
-sudo visudo
+sudo visudo öffnet die Sudo-Konfigurationsdatei, in der überprüft werden kann, welche Gruppen welche Berechtigungen für die Benutzung des sudo-Befehls besitzen.
 
 \section{Datei- und Rechteverwaltung}
 
 \subsection*{1.}
-Ein neues Terminal lässt sich durch Klic
+Ein neues Terminal lässt sich durch Klick auf \emph{Menu} und eins der Terminal-Anwendungen öffnen.
 
 \subsection*{2.}
 Mit dem Befehl \emph{su labmate} "switch user" wechselt man zu einem anderen Benutzer. Alternativ kann man \emph{su - labmate} verwenden, um eine neue Login-Shell zu starten, sodass die Umgebung inkl. aktuellem Pfad und Umgebungsvariablen zurückgesetzt wird.
@@ -158,24 +174,43 @@ Das Programm 'top' wird durch den Befehl \emph{top} gestartet.
 
 \subsection*{3.}
 Erst wechseln wir den User mit Hilfe von \emph{su labmate}. Anschließend öffnen wir ein weiteres Terminal.
-Führt man darauf den Befehl \emph{cat /dev/urandom} aus, wird ein Stream von Bytes an das Terminal gesendet, die nicht alle angezeigt werden können. Dies bringt das Terminal zum Absturz. Im top Fenster sieht man, dass die Auslastung des Prozesses aufgrund des \emph{cat} Befehls schnell auf 100\% steigt.
+Führt man darauf den Befehl \emph{cat /dev/urandom} aus, wird ein Stream von zufälligen Bytes an das Terminal gesendet, die nicht alle angezeigt werden können. Dies bringt das Terminal zum Absturz. Im top Fenster sieht man, dass die Auslastung des Prozesses aufgrund des \emph{cat} Befehls schnell ansteigt.
 
 \subsection*{4.}
-
+Beenden wir den Prozess aus 3. mit dem Befehl \emph{kill 'pid'}, bekommen wir die Fehlermeldung \emph{kill: ([pid]) - Operation not permitted}. Als normaler Nutzer können wir nicht laufende Prozesse anderer Nutzer beenden. Als Benutzer \emph{root} lässt sich der Prozess beenden.
 
 \subsection*{5.}
-Da der User 'labmate' über sudo Rechte verfügt, ist dieser Berechtigt das System durch den Befehl \emph{sudo reboot} neu zu starten. Sollte ein User keine sudo Rechte besitzen, kann er dadurch nicht das System neu starten.
+Da der User 'labmate' über sudo Rechte verfügt, ist dieser Berechtigt das System durch den Befehl \emph{sudo reboot} neu zu starten. Sollte ein User keine sudo Rechte besitzen, kann er dadurch das System nicht neu starten.
 
 \subsection*{6.}
 Erst legen wir im Verzeichnis \emph{/home/labmate/} eine neue Datei mit dem Namen 'stempel.txt' an. Dies erfolgt durch den Befehl \emph{touch stempel.txt}. Anschließend muss man mit \emph{crontab -e} das Programm ausführen. Dort kann man dann mit dem Befehl \emph{*/5 * * * * date \textgreater\textgreater /home/labmate/stempel.txt} einen Cronjob anlegen, der alle 5 Minuten die Uhrzeit und Datum an die Datei 'stempel.txt' anhängt. Die ersten fünf Argumente stehen hierbei für die Frequenz der Ausführung des Jobs, beginnend mit den Minuten (in diesem Fall bedeutet */5 alle 5 Minuten), Stunden (Stern für jede Stunde), Tagen, Monaten und schließlich den Wochentagen. Der Befehl \emph{date} erzeugt eine Ausgabe mit der aktuellen Uhrzeit und Datum, die dann an die Datei 'stempel.txt' gesendet wird.
 
-
-
 \section{VMware-Tools installieren}
+
+\subsection*{2.}
+Nachdem wir uns erfolgreich mit dem Benutzer 'user' angemeldet haben, installieren wir über das VMWare Menü die VMWare Tools.
+
+\subsection*{3.}
+Anschließend entpacken wir das Archiv in unser Home-Verzeichnis mit dem Befehl \emph{tar xf vmware-tools-distrib.tar -C /home/user}. 
+
+\subsection*{4.}
+Nun wechseln wir in das erzeugte Verzeichnis mit dem Befehl \emph{cd home/user/vmware-tools-distrib/}.
+
+\subsection*{5.}
+Beim Versuch das Skript auszuführen bekommt man erst eine Fehlermeldung \emph{'Setup is unable to find the "depmod" program on your machine. (...)'}. Das liegt daran, dass das Ausführen dieses Skript root-Rechte benötigt. Führt man das Skript erneut mit Root-Rechten aus, wird das Programm erfolgreich installiert.
+
+\subsection*{6.}
+Nach einem Systemneustart verfügen wir nun über die installierten VMWare-Tools.
 
 \section{Bedienung von VMware}
 
+\subsection*{3.}
+Man beobachtet, dass die virtuelle Maschine in dem exakt gleichen Zustand startet, mit dem sie pausiert wurde.
 
+\section{Snapshots}
+
+\subsection*{5.}
+Im Snapshot Manager ist zu sehen, dass sowohl der aktuelle Snapshot "Calculator" als auch der Snapshot "Browser" vom Snapshot "top" abstammen. Sie liegen als logisch "nebeneinander".
 
 
 \fullcite{Test}
