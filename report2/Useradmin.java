@@ -8,26 +8,125 @@ import java.util.concurrent.ThreadLocalRandom;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.BufferedReader;
-import java.io.InputStreamReader;
+import java.io.Console;
 
 
 public class Useradmin {
-    public void addUser(String username, char[] password) {
+
+    // https://stackoverflow.com/questions/9655181/how-to-convert-a-byte-array-to-a-hex-string-in-java
+    private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
+
+    public static String bytesToHex(byte[] bytes) {
+        byte[] hexChars = new byte[bytes.length * 2];
+        for (int j = 0; j < bytes.length; j++) {
+            int v = bytes[j] & 0xFF;
+            hexChars[j * 2] = HEX_ARRAY[v >>> 4];
+            hexChars[j * 2 + 1] = HEX_ARRAY[v & 0x0F];
+        }
+        return new String(hexChars, StandardCharsets.UTF_8);
+    }
+
+    private static String line_format = "%s:%s:%s\n";
+
+    public boolean checkUser(String username, char[] password) {
         try {
-            FileWriter writer = new FileWriter("passwords.txt");
+            FileReader reader = new FileReader("passwords.txt");
+
+            char[] content_char = new char[10000000];
+            reader.read(content_char);
+            String content = String.valueOf(content_char);
+
+            String[] user_strings = content.split("\n");
+            for (String user_string : user_strings) {
+                String[] user_salt_hash = user_string.split(":");
+
+                if (user_salt_hash[0].equals(username)) {
+                    String password_salt = user_salt_hash[1];
+                    String password_hash = this.generateSaltedPasswordHash(
+                        String.valueOf(password),
+                        password_salt
+                    );
+                    String saved_password_hash = user_salt_hash[2];
+
+                    if (saved_password_hash.equals(password_hash)) {
+                        return true;
+
+                    } else {
+                        return false;
+
+                    }
+                }
+            }
+
+            reader.close();
 
         } catch (IOException e) {
             e.printStackTrace();
 
         }
 
+        return false;
+
+    }
+
+    public void addUser(String username, char[] password) {
         int random_number = ThreadLocalRandom.current().nextInt(0, Integer.MAX_VALUE);
         String password_salt = username + random_number;
 
-        String password_hash = this.generateSaltedPasswordHash(String.valueOf(password), password_salt);
+        String password_hash = this.generateSaltedPasswordHash(
+            String.valueOf(password),
+            password_salt
+        );
 
-        System.out.println(password_hash);
+        try {
+            FileReader reader = new FileReader("passwords.txt");
+
+            char[] content_char = new char[10000000];
+            reader.read(content_char);
+            String content = new String(content_char);
+            StringBuilder output_content = new StringBuilder();
+
+            String[] user_strings = content.split("\n");
+
+            boolean found_user = false;
+            for (String user_string : user_strings) {
+                if (user_string.split(":")[0].equals(username)) {
+                    String s = String.format(
+                        Useradmin.line_format,
+                        username,
+                        password_salt,
+                        password_hash
+                    );
+                    output_content.append(s);
+                    found_user = true;
+
+                } else {
+                    output_content.append((user_string + "\n"));
+
+                }
+            }
+
+            if (!found_user) {
+                String s = String.format(
+                    Useradmin.line_format,
+                    username,
+                    password_salt,
+                    password_hash
+                );
+                output_content.append(s);
+            }
+
+            reader.close();
+
+            FileWriter writer = new FileWriter("passwords.txt");
+            writer.write(output_content.toString());
+            writer.close();
+
+        } catch (IOException e) {
+            e.printStackTrace();
+
+        }
+
     }
 
     private String generateSaltedPasswordHash(String password, String salt) {
@@ -44,7 +143,7 @@ public class Useradmin {
 
         }
 
-        return new String(bytes);
+        return new String(Useradmin.bytesToHex(bytes));
 
     }
 
@@ -59,22 +158,25 @@ public class Useradmin {
 
         Useradmin useradmin = new Useradmin();
 
-        System.out.println(command);
-        System.out.println(command=="addUser\0");
-        System.out.println(param);
+        if (command.equals("addUser")) {
+            Console console = System.console();
 
-        if (command == "addUser") {
-            System.out.println("New password:");
-            BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+            char[] password = console.readPassword("New password:");
+            useradmin.addUser(param, password);
 
-            try {
-                String password = reader.readLine();
-                useradmin.addUser(param, password.toCharArray());
+        } else if (command.equals("checkUser")) {
+            Console console = System.console();
 
-            } catch (IOException e) {
-                e.printStackTrace();
+            char[] password = console.readPassword("Password:");
+            boolean authenticated = useradmin.checkUser(param, password);
+            if (authenticated) {
+                System.out.println("Access Granted");
+
+            } else {
+                System.out.println("Access Denied");
 
             }
+
         }
     }
 }
