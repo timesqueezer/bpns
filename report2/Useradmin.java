@@ -5,9 +5,11 @@ import java.security.NoSuchAlgorithmException;
 
 import java.util.concurrent.ThreadLocalRandom;
 
+import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.FileNotFoundException;
 import java.io.Console;
 
 
@@ -30,35 +32,34 @@ public class Useradmin {
 
     public boolean checkUser(String username, char[] password) {
         try {
-            FileReader reader = new FileReader("passwords.txt");
+            try (BufferedReader br = new BufferedReader(new FileReader("passwords.txt"))) {
+                String user_string;
+                while ((user_string = br.readLine()) != null) {
+                    /* if (user_string.length() == 0) {
+                        continue;
+                    } */
 
-            char[] content_char = new char[10000000];
-            reader.read(content_char);
-            String content = String.valueOf(content_char);
+                    String[] user_salt_hash = user_string.split(":");
 
-            String[] user_strings = content.split("\n");
-            for (String user_string : user_strings) {
-                String[] user_salt_hash = user_string.split(":");
 
-                if (user_salt_hash[0].equals(username)) {
-                    String password_salt = user_salt_hash[1];
-                    String password_hash = this.generateSaltedPasswordHash(
-                        String.valueOf(password),
-                        password_salt
-                    );
-                    String saved_password_hash = user_salt_hash[2];
+                    if (user_salt_hash[0].equals(username)) {
+                        String password_salt = user_salt_hash[1];
+                        String password_hash = this.generateSaltedPasswordHash(
+                            String.valueOf(password),
+                            password_salt
+                        );
+                        String saved_password_hash = user_salt_hash[2];
 
-                    if (saved_password_hash.equals(password_hash)) {
-                        return true;
+                        if (saved_password_hash.equals(password_hash)) {
+                            return true;
 
-                    } else {
-                        return false;
+                        } else {
+                            return false;
 
+                        }
                     }
                 }
             }
-
-            reader.close();
 
         } catch (IOException e) {
             e.printStackTrace();
@@ -78,18 +79,12 @@ public class Useradmin {
             password_salt
         );
 
-        try {
-            FileReader reader = new FileReader("passwords.txt");
+        StringBuilder output_content = new StringBuilder();
+        boolean found_user = false;
 
-            char[] content_char = new char[10000000];
-            reader.read(content_char);
-            String content = new String(content_char);
-            StringBuilder output_content = new StringBuilder();
-
-            String[] user_strings = content.split("\n");
-
-            boolean found_user = false;
-            for (String user_string : user_strings) {
+        try (BufferedReader br = new BufferedReader(new FileReader("passwords.txt"))) {
+            String user_string;
+            while ((user_string = br.readLine()) != null) {
                 if (user_string.split(":")[0].equals(username)) {
                     String s = String.format(
                         Useradmin.line_format,
@@ -105,19 +100,24 @@ public class Useradmin {
 
                 }
             }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
 
-            if (!found_user) {
-                String s = String.format(
-                    Useradmin.line_format,
-                    username,
-                    password_salt,
-                    password_hash
-                );
-                output_content.append(s);
-            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
-            reader.close();
+        if (!found_user) {
+            String s = String.format(
+                Useradmin.line_format,
+                username,
+                password_salt,
+                password_hash
+            );
+            output_content.append(s);
+        }
 
+        try {
             FileWriter writer = new FileWriter("passwords.txt");
             writer.write(output_content.toString());
             writer.close();
