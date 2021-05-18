@@ -30,22 +30,23 @@ public class Chat {
                 DatagramPacket packet = new DatagramPacket(buf, buf.length);
                 socket.receive(packet);
 
-                InetAddress address = packet.getAddress();
-                int port = packet.getPort();
-                packet = new DatagramPacket(buf, buf.length, address, port);
                 String received = new String(packet.getData(), 0, packet.getLength());
 
-                if (received.equals("end")) {
-                    running = false;
-                    continue;
-                }
                 System.out.println(received);
-                // socket.send(packet);
+
+                /* InetAddress address = packet.getAddress();
+                int port = packet.getPort();
+                packet = new DatagramPacket(buf, buf.length, address, port);
+                socket.send(packet); */
+
             } catch (IOException e) {
                 e.printStackTrace();
+
             }
         }
+
         socket.close();
+
     }
 
     public static void main(String[] args) {

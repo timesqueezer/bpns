@@ -14,7 +14,6 @@ import java.io.Console;
 
 
 public class Useradmin {
-
     // https://stackoverflow.com/questions/9655181/how-to-convert-a-byte-array-to-a-hex-string-in-java
     private static final byte[] HEX_ARRAY = "0123456789ABCDEF".getBytes(StandardCharsets.US_ASCII);
 
@@ -35,13 +34,7 @@ public class Useradmin {
             try (BufferedReader br = new BufferedReader(new FileReader("passwords.txt"))) {
                 String user_string;
                 while ((user_string = br.readLine()) != null) {
-                    /* if (user_string.length() == 0) {
-                        continue;
-                    } */
-
                     String[] user_salt_hash = user_string.split(":");
-
-
                     if (user_salt_hash[0].equals(username)) {
                         String password_salt = user_salt_hash[1];
                         String password_hash = this.generateSaltedPasswordHash(
@@ -52,22 +45,16 @@ public class Useradmin {
 
                         if (saved_password_hash.equals(password_hash)) {
                             return true;
-
                         } else {
                             return false;
-
                         }
                     }
                 }
             }
-
         } catch (IOException e) {
             e.printStackTrace();
-
         }
-
         return false;
-
     }
 
     public void addUser(String username, char[] password) {
@@ -94,10 +81,8 @@ public class Useradmin {
                     );
                     output_content.append(s);
                     found_user = true;
-
                 } else {
                     output_content.append((user_string + "\n"));
-
                 }
             }
         } catch (FileNotFoundException e) {
@@ -121,30 +106,22 @@ public class Useradmin {
             FileWriter writer = new FileWriter("passwords.txt");
             writer.write(output_content.toString());
             writer.close();
-
         } catch (IOException e) {
             e.printStackTrace();
-
         }
-
     }
 
     private String generateSaltedPasswordHash(String password, String salt) {
         byte[] bytes = null;
         try {
             MessageDigest md = MessageDigest.getInstance("SHA-512");
-
             md.update(salt.getBytes(StandardCharsets.UTF_8));
             md.update(password.getBytes(StandardCharsets.UTF_8));
             bytes = md.digest();
-
         } catch (NoSuchAlgorithmException e) {
             e.printStackTrace();
-
         }
-
         return new String(Useradmin.bytesToHex(bytes));
-
     }
 
     public static void main(String[] args) {
@@ -152,31 +129,22 @@ public class Useradmin {
             System.out.println("wrong format");
             System.exit(1);
         }
-
         String command = args[0];
         String param = args[1];
-
         Useradmin useradmin = new Useradmin();
-
         if (command.equals("addUser")) {
             Console console = System.console();
-
             char[] password = console.readPassword("New password:");
             useradmin.addUser(param, password);
-
         } else if (command.equals("checkUser")) {
             Console console = System.console();
-
             char[] password = console.readPassword("Password:");
             boolean authenticated = useradmin.checkUser(param, password);
             if (authenticated) {
                 System.out.println("Access Granted");
-
             } else {
                 System.out.println("Access Denied");
-
             }
-
         }
     }
 }
