@@ -23,6 +23,8 @@ class SocketThrdServer extends JFrame{
 
 	ArrayList<ClientWorker> clientWorkers;
 
+	Useradmin useradmin;
+
 	SocketThrdServer() { // Begin Constructor
 		panel = new JPanel();
 		panel.setLayout(new BorderLayout());
@@ -32,6 +34,8 @@ class SocketThrdServer extends JFrame{
 		panel.add("Center", textArea);
 
 		clientWorkers = new ArrayList<ClientWorker>();
+
+		useradmin = new Useradmin();
 	} // End Constructor
 
 	public void listenSocket() {
@@ -63,6 +67,10 @@ class SocketThrdServer extends JFrame{
 		for (ClientWorker w : clientWorkers) {
 			w.send(line);
 		}
+	}
+
+	public boolean authenticate(String username, char[] password) {
+		return useradmin.checkUser(username, password);
 	}
 
 	protected void finalize(){

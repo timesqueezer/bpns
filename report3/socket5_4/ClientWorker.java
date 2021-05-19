@@ -15,6 +15,8 @@ class ClientWorker implements Runnable {
 
 	private PrintWriter out = null;
 
+	private boolean authenticated = false;
+
 	ClientWorker(Socket client, JTextArea textArea, SocketThrdServer server) {
 		this.client = client;
 		this.textArea = textArea;
@@ -36,12 +38,30 @@ class ClientWorker implements Runnable {
 			System.exit(-1);
 		}
 
-		while(true){
+		boolean running = true;
+
+		while (running) {
 			try{
 				line = in.readLine();
 				// Send data back to client
 				// out.println(line);
-				server.broadcast(line);
+				if (authenticated) {
+					server.broadcast(line);
+				} else {
+
+					if (line.indexOf(":") != -1 &&
+						server.authenticate(
+						line.split(":")[0],
+						line.split(":")[1].toCharArray()
+					)) {
+						authenticated = true;
+						out.println("Authenticated");
+
+					} else {
+						out.println("Unauthenticated");
+						running = false;
+					}
+				}
 
 				textArea.append(line);
 

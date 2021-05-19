@@ -1,4 +1,4 @@
-package javaLanguage.basic.socket;
+package socket5_4;
 
 import java.awt.Color;
 import java.awt.BorderLayout;
@@ -56,14 +56,14 @@ class SocketClient extends JFrame
   public void listenSocket(){
 //Create socket connection
      try{
-//       socket = new Socket("kq6py", 4444);
-       socket = new Socket("localhost", 4444); 
+       socket = new Socket("127.0.0.1", 4444); 
        out = new PrintWriter(socket.getOutputStream(), true);
        in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
      } catch (UnknownHostException e) {
        System.out.println("Unknown host: kq6py.eng");
        System.exit(1);
      } catch  (IOException e) {
+      e.printStackTrace();
        System.out.println("No I/O");
        System.exit(1);
      }
