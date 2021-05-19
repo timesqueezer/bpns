@@ -1,0 +1,71 @@
+K 25
+svn:wc:ra_dav:version-url
+V 71
+/svn/!svn/ver/171/trunk/src/main/java/javaLanguage/basic/socket/another
+END
+StreamConnection.java
+K 25
+svn:wc:ra_dav:version-url
+V 93
+/svn/!svn/ver/171/trunk/src/main/java/javaLanguage/basic/socket/another/StreamConnection.java
+END
+StreamSwitch.java
+K 25
+svn:wc:ra_dav:version-url
+V 89
+/svn/!svn/ver/171/trunk/src/main/java/javaLanguage/basic/socket/another/StreamSwitch.java
+END
+User.java
+K 25
+svn:wc:ra_dav:version-url
+V 81
+/svn/!svn/ver/171/trunk/src/main/java/javaLanguage/basic/socket/another/User.java
+END
+Client.java
+K 25
+svn:wc:ra_dav:version-url
+V 83
+/svn/!svn/ver/171/trunk/src/main/java/javaLanguage/basic/socket/another/Client.java
+END
+ConnectionUser.java
+K 25
+svn:wc:ra_dav:version-url
+V 91
+/svn/!svn/ver/171/trunk/src/main/java/javaLanguage/basic/socket/another/ConnectionUser.java
+END
+Connection.java
+K 25
+svn:wc:ra_dav:version-url
+V 87
+/svn/!svn/ver/171/trunk/src/main/java/javaLanguage/basic/socket/another/Connection.java
+END
+ClientGUI.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/171/trunk/src/main/java/javaLanguage/basic/socket/another/ClientGUI.java
+END
+NIOConnection.java
+K 25
+svn:wc:ra_dav:version-url
+V 90
+/svn/!svn/ver/171/trunk/src/main/java/javaLanguage/basic/socket/another/NIOConnection.java
+END
+UserTable.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/171/trunk/src/main/java/javaLanguage/basic/socket/another/UserTable.java
+END
+NIOSwitch.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/171/trunk/src/main/java/javaLanguage/basic/socket/another/NIOSwitch.java
+END
+Functions.java
+K 25
+svn:wc:ra_dav:version-url
+V 86
+/svn/!svn/ver/171/trunk/src/main/java/javaLanguage/basic/socket/another/Functions.java
+END
