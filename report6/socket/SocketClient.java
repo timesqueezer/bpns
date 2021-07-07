@@ -1,0 +1,132 @@
+package socket;
+
+import java.awt.Color;
+import java.awt.BorderLayout;
+import java.awt.event.*;
+import javax.swing.*;
+
+import java.io.*;
+import java.net.*;
+import java.security.KeyStore;
+
+import javax.net.ssl.*;
+import javax.security.cert.X509Certificate;
+
+
+class SocketClient extends JFrame
+		 implements ActionListener {
+
+   JLabel text, clicked;
+   JButton button;
+   JPanel panel;
+   JTextField textField;
+   Socket socket = null;
+   PrintWriter out = null;
+   BufferedReader in = null;
+
+   SocketClient(){ //Begin Constructor
+     text = new JLabel("Text to send over socket:");
+     textField = new JTextField(20);
+     button = new JButton("Click Me");
+     button.addActionListener(this);
+
+     panel = new JPanel();
+     panel.setLayout(new BorderLayout());
+     panel.setBackground(Color.white);
+     getContentPane().add(panel);
+     panel.add("North", text);
+     panel.add("Center", textField);
+     panel.add("South", button);
+   } //End Constructor
+
+  public void actionPerformed(ActionEvent event){
+     Object source = event.getSource();
+
+     if(source == button){
+//Send data over socket
+          String text = textField.getText();
+          out.println(text);
+	  textField.setText(new String(""));
+//Receive text from server
+       try{
+	  String line = in.readLine();
+          System.out.println("Text received :" + line);
+       } catch (IOException e){
+	 System.out.println("Read failed");
+       	 System.exit(1);
+       }
+     }
+  }
+
+  public void listenSocket(){
+//Create socket connection
+    try{
+       // socket = new Socket("127.0.0.1", 4444);
+
+      System.setProperty("javax.net.ssl.trustStore","clientstore");
+      System.setProperty("javax.net.ssl.trustStorePassword","nooNaech4iemo0vu");
+      SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
+
+      /* SSLSocketFactory factory = null;
+      try {
+          SSLContext ctx;
+          KeyManagerFactory kmf;
+          KeyStore ks;
+          char[] passphrase = "passphrase".toCharArray();
+
+          ctx = SSLContext.getInstance("TLS");
+          kmf = KeyManagerFactory.getInstance("SunX509");
+          ks = KeyStore.getInstance("JKS");
+
+          ks.load(new FileInputStream("clientcert.pem"), passphrase);
+
+          kmf.init(ks, passphrase);
+          ctx.init(kmf.getKeyManagers(), null, null);
+
+          factory = ctx.getSocketFactory();
+
+      } catch (Exception e) {
+          throw new IOException(e.getMessage());
+
+      } */
+
+      SSLSocket socket = (SSLSocket) factory.createSocket("127.0.0.1", 4444);
+
+      socket.startHandshake();
+
+      out = new PrintWriter(socket.getOutputStream(), true);
+      in = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+
+
+
+
+     } catch (UnknownHostException e) {
+       System.out.println("Unknown host");
+       System.exit(1);
+
+
+
+     } catch  (IOException e) {
+      e.printStackTrace();
+       System.out.println("No I/O");
+       System.exit(1);
+
+
+     }
+  }
+
+   public static void main(String[] args){
+        SocketClient frame = new SocketClient();
+	    frame.setTitle("Client Program");
+        WindowListener l = new WindowAdapter() {
+                public void windowClosing(WindowEvent e) {
+                        System.exit(0);
+                }
+        };
+
+        frame.addWindowListener(l);
+        frame.pack();
+        frame.setVisible(true);
+	frame.listenSocket();
+  }
+}
