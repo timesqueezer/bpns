@@ -22,8 +22,6 @@ import javax.swing.JLabel;
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 
-import java.time.LocalTime;
-import static java.time.temporal.ChronoUnit.MILLIS;
 
 
 class SocketThrdServer extends JFrame{
@@ -34,7 +32,6 @@ class SocketThrdServer extends JFrame{
 	ServerSocket server = null;
 
 	ArrayList<ClientWorker> clientWorkers;
-	HashMap<InetAddress, LocalTime> lastAuthAttemptPerIP;
 
 	Useradmin useradmin;
 
@@ -49,13 +46,11 @@ class SocketThrdServer extends JFrame{
 		clientWorkers = new ArrayList<ClientWorker>();
 		lastAuthAttemptPerIP = new HashMap<InetAddress, LocalTime>();
 
-		useradmin = new Useradmin();
 	} // End Constructor
 
 	public void listenSocket() {
 		SSLServerSocketFactory ssf = null;
         try {
-            // set up key manager to do server authentication
             SSLContext ctx;
             KeyManagerFactory kmf;
             KeyStore ks;
@@ -99,26 +94,10 @@ class SocketThrdServer extends JFrame{
 		}
 	}
 
-	public boolean checkLastAuthAttempt(Socket socket) {
-		InetAddress addr = socket.getLocalAddress();
-		LocalTime lastAuthAttempt = lastAuthAttemptPerIP.get(addr);
-		LocalTime now = LocalTime.now();
-
-		if (lastAuthAttempt != null && MILLIS.between(lastAuthAttempt, now) < 1000) {
-			return false;
-		}
-
-		lastAuthAttemptPerIP.put(addr, now);
-
-		return true;
-
-	}
-
-	protected void finalize(){
-		// Objects created in run method are finalized when
-		// program terminates and thread exits
+	protected void finalize() {
 		try {
 			server.close();
+
 		} catch (IOException e) {
 			System.out.println("Could not close socket");
 			System.exit(-1);

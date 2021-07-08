@@ -66,30 +66,6 @@ class SocketClient extends JFrame
       System.setProperty("javax.net.ssl.trustStore","clientstore");
       System.setProperty("javax.net.ssl.trustStorePassword","nooNaech4iemo0vu");
       SSLSocketFactory factory = (SSLSocketFactory) SSLSocketFactory.getDefault();
-
-      /* SSLSocketFactory factory = null;
-      try {
-          SSLContext ctx;
-          KeyManagerFactory kmf;
-          KeyStore ks;
-          char[] passphrase = "passphrase".toCharArray();
-
-          ctx = SSLContext.getInstance("TLS");
-          kmf = KeyManagerFactory.getInstance("SunX509");
-          ks = KeyStore.getInstance("JKS");
-
-          ks.load(new FileInputStream("clientcert.pem"), passphrase);
-
-          kmf.init(ks, passphrase);
-          ctx.init(kmf.getKeyManagers(), null, null);
-
-          factory = ctx.getSocketFactory();
-
-      } catch (Exception e) {
-          throw new IOException(e.getMessage());
-
-      } */
-
       SSLSocket socket = (SSLSocket) factory.createSocket("127.0.0.1", 4444);
 
       socket.startHandshake();

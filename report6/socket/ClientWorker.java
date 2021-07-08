@@ -17,8 +17,6 @@ class ClientWorker implements Runnable {
 
 	private PrintWriter out = null;
 
-	private boolean authenticated = true; // always true if running in ssl mode
-
 	ClientWorker(Socket client, JTextArea textArea, SocketThrdServer server) {
 		this.client = client;
 		this.textArea = textArea;
@@ -44,13 +42,8 @@ class ClientWorker implements Runnable {
 			try {
 				line = in.readLine();
 
-				if (authenticated) {
-					server.broadcast(line);
-					textArea.append(line);
-
-				} else {
-					//
-				}
+				server.broadcast(line);
+				textArea.append(line);
 
 			} catch (IOException e) {
 				System.out.println("Read failed");
